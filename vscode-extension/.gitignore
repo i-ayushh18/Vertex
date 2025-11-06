@@ -1,0 +1,29 @@
+# Compiled output
+out/
+dist/
+
+# Node modules
+node_modules/
+
+# VS Code extension package
+*.vsix
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# Backend executable (will be built separately)
+backend/vertex-server.exe
+
+# Test files
+test-results/
+coverage/
+
+#md files

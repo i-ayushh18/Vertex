@@ -1,0 +1,284 @@
+{
+  "name": "vertex-extension",
+  "displayName": "VERTEX - Python Code Analysis (Beta)",
+  "description": "Real-time cross-file Python analysis with visual highlighting and dead code detection",
+  "version": "0.1.0",
+  "publisher": "codevertex",
+  "icon": "assets/vertex-icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codevertex/vertex-extension.git"
+  },
+  "homepage": "https://github.com/codevertex/vertex-extension",
+  "bugs": {
+    "url": "https://github.com/codevertex/vertex-extension/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "python", 
+    "analysis", 
+    "dead-code", 
+    "refactoring", 
+    "navigation",
+    "code-quality",
+    "highlighting",
+    "cross-file",
+    "static-analysis",
+    "code-navigation"
+  ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "activationEvents": [
+    "onLanguage:python"
+  ],
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "prepublishOnly": "npm run compile",
+    "vscode:prepublish": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "vertex.hello",
+        "title": "Hello from VERTEX",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.testBackend",
+        "title": "Test Backend Connection",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.analyzeBackend",
+        "title": "Analyze Code via Backend",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.analyzeDeadCode",
+        "title": "Analyze Dead Code (Project-wide)",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.nextLockedCaller",
+        "title": "Navigate to Next Caller",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.prevLockedCaller",
+        "title": "Navigate to Previous Caller",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.navigateToFirstCaller",
+        "title": "Navigate to First Caller",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.exitNavigation",
+        "title": "Exit Navigation Mode",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.resetNavigationContext",
+        "title": "Reset Navigation Context",
+        "category": "VERTEX"
+      },
+
+      {
+        "command": "vertex.lockFunctionHighlights",
+        "title": "VERTEX: Lock Highlights (Callers + Callees)",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.lockFunctionByName",
+        "title": "VERTEX: Lock by Function Name",
+        "category": "VERTEX"
+      },
+      {
+        "command": "vertex.unlockFunctionHighlights",
+        "title": "VERTEX: Unlock Highlights",
+        "category": "VERTEX"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vertex.nextLockedCaller",
+        "key": "alt+]",
+        "mac": "alt+]",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "vertex.prevLockedCaller",
+        "key": "alt+[",
+        "mac": "alt+[",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "vertex.unlockFunctionHighlights",
+        "key": "escape",
+        "mac": "escape",
+        "when": "editorTextFocus && editorLangId == python"
+      },
+      {
+        "command": "vertex.analyzeDeadCode",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "editorTextFocus && editorLangId == python"
+      }
+    ],
+    "configuration": {
+      "title": "VERTEX",
+      "properties": {
+        "vertex.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable VERTEX features globally",
+          "scope": "window"
+        },
+        "vertex.backendUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "URL of the Python analysis backend server",
+          "scope": "window"
+        },
+        "vertex.showCallerHighlights": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight lines that call the current function (orange)",
+          "scope": "window"
+        },
+        "vertex.showCalleeHighlights": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight functions called by the current function (pink)",
+          "scope": "window"
+        },
+        "vertex.showCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show caller/callee counts above functions",
+          "scope": "window"
+        },
+        "vertex.showUnusedWarnings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show warnings for unused functions (dead code)",
+          "scope": "window"
+        },
+        "vertex.colors.callerBackground": {
+          "type": "string",
+          "default": "rgba(255,165,0,0.25)",
+          "description": "Background color for caller highlights",
+          "scope": "window"
+        },
+        "vertex.colors.callerBorder": {
+          "type": "string",
+          "default": "darkorange",
+          "description": "Border color for caller highlights",
+          "scope": "window"
+        },
+        "vertex.colors.calleeBackground": {
+          "type": "string",
+          "default": "rgba(255,182,193,0.25)",
+          "description": "Background color for callee highlights",
+          "scope": "window"
+        },
+        "vertex.colors.calleeBorder": {
+          "type": "string",
+          "default": "deeppink",
+          "description": "Border color for callee highlights",
+          "scope": "window"
+        },
+        "vertex.highlightStyle": {
+          "type": "string",
+          "enum": ["background", "underline", "both"],
+          "enumDescriptions": [
+            "Highlight with background color and border",
+            "Highlight with underline only",
+            "Highlight with both background and underline"
+          ],
+          "default": "background",
+          "description": "How to visually mark callers and callees",
+          "scope": "window"
+        },
+        "vertex.debounceDelay": {
+          "type": "number",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 1000,
+          "description": "Delay (in milliseconds) before updating highlights after cursor movement",
+          "scope": "window"
+        },
+        "vertex.exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "**/tests/**",
+            "**/*_test.py",
+            "**/test_*.py",
+            "**/__pycache__/**",
+            "**/venv/**",
+            "**/env/**"
+          ],
+          "description": "File patterns to exclude from analysis (glob patterns)",
+          "scope": "window"
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "vertex.callerHighlight",
+        "description": "Background color for caller highlights",
+        "defaults": {
+          "dark": "#ff9500",
+          "light": "#ff8c00",
+          "highContrast": "#ffa500"
+        }
+      },
+      {
+        "id": "vertex.calleeHighlight",
+        "description": "Background color for callee highlights",
+        "defaults": {
+          "dark": "#ffb6c1",
+          "light": "#ffc0cb",
+          "highContrast": "#ffb6c1"
+        }
+      }
+    ]
+  },
+  "files": [
+    "out/**/*",
+    "backend/vertex-server*",
+    "assets/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vscode/test-electron": "^2.3.0",
+    "eslint": "^8.50.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.2.0"
+  }
+}

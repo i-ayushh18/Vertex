@@ -1,0 +1,39 @@
+# Source TypeScript files (don't package, only compiled JS)
+src/**/*.ts
+tsconfig*.json
+.vscode/
+node_modules/
+
+# Development files
+*.vsix
+.gitignore
+.eslintrc.json
+
+# Backend source code (we'll include only the executable)
+../backend/app/
+../backend/main.py
+../backend/vertex_server.py
+../backend/vertex_server.spec
+../backend/requirements.txt
+../backend/run_tests.py
+../backend/tests/
+../backend/__init__.py
+
+# Documentation files (keep only README)
+../TECHNICAL_ARCHITECTURE.md
+../THEORETICAL_FOUNDATIONS.md
+../CROSS_FILE_NAVIGATION.md
+
+# Test files and examples
+../test_project/
+test/
+**/*test*
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Only include the compiled output and executable
+!out/**/*
+!backend/vertex-server*

@@ -7,11 +7,11 @@
   "icon": "assets/vertex-icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/codevertex/vertex-extension.git"
+    "url": "https://github.com/i-ayushh18/Vertex.git"
   },
-  "homepage": "https://github.com/codevertex/vertex-extension",
+  "homepage": "https://github.com/i-ayushh18/Vertex.git",
   "bugs": {
-    "url": "https://github.com/codevertex/vertex-extension/issues"
+    "url": "https://github.com/i-ayushh18/Vertex/issues"
   },
   "license": "MIT",
   "engines": {

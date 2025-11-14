@@ -1,19 +1,13 @@
 {
   "packages": {
-    "vscode-extension": {
-      "release-type": "node",
-      "package-name": "vertex-extension",
+    ".": {
+      "release-type": "simple",
+      "package-name": "vertex",
       "changelog-path": "CHANGELOG.md",
       "bump-minor-pre-major": true,
-      "bump-patch-for-minor-pre-major": true,
-      "extra-files": [
-        "vscode-extension/package.json"
-      ]
+      "bump-patch-for-minor-pre-major": true
     }
   },
-  "release-type": "simple",
-  "bump-minor-pre-major": true,
-  "bump-patch-for-minor-pre-major": true,
   "changelog-sections": [
     {"type": "feat", "section": "✨ Features"},
     {"type": "fix", "section": "🐛 Bug Fixes"},

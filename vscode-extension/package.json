@@ -2,7 +2,7 @@
   "name": "vertex-extension",
   "displayName": "VERTEX - Python Code Analysis (Beta)",
   "description": "Real-time cross-file Python analysis with visual highlighting and dead code detection",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "codevertex",
   "icon": "assets/vertex-icon.png",
   "repository": {
@@ -138,7 +138,7 @@
         "key": "ctrl+shift+d",
         "mac": "cmd+shift+d",
         "when": "editorTextFocus && editorLangId == python"
-      }
+      }      
     ],
     "configuration": {
       "title": "VERTEX",

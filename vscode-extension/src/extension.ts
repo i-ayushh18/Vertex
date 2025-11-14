@@ -23,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Initialize and start backend
   backendManager = new BackendManager(context.extensionPath);
   const backendStarted = await backendManager.startBackend();
-  
+
   if (!backendStarted) {
     vscode.window.showErrorMessage(
       'VERTEX: Failed to start backend server. Some features may not work.',
@@ -39,7 +39,6 @@ export async function activate(context: vscode.ExtensionContext) {
       await runInitialDeadCodeAnalysis();
     }, 2000); // Wait 2 seconds to let everything settle
   }
-
   // ==================== Test Commands ====================
   const helloCommand = vscode.commands.registerCommand('vertex.hello', () => {
     vscode.window.showInformationMessage('Hello from VERTEX!');
@@ -152,11 +151,22 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   // ==================== Status Bar Item ====================
-  const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-  statusBarItem.text = '$(telescope) VERTEX';
-  statusBarItem.tooltip = 'VERTEX: Click to test backend connection';
-  statusBarItem.command = 'vertex.testBackend';
+  console.log('[VERTEX] Creating status bar item...');
+  const statusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Right,
+    100
+  );
+
+  statusBarItem.text = "$(check) VERTEX";
+  statusBarItem.tooltip = "VERTEX: Backend running — Click to test";
+  statusBarItem.command = "vertex.testBackend";
+  // statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.prominentBackground');
+
+  console.log('[VERTEX] Showing status bar item...');
   statusBarItem.show();
+  context.subscriptions.push(statusBarItem);
+  console.log('[VERTEX] Status bar item created and shown');
+
 
   // ==================== Register All Disposables ====================
   context.subscriptions.push(
@@ -171,8 +181,8 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   // Add these to your extension.ts after the lock mode commands
   context.subscriptions.push(
-  vscode.commands.registerCommand('vertex.nextLockedCaller', nextLockedCaller),
-  vscode.commands.registerCommand('vertex.prevLockedCaller', prevLockedCaller)
+    vscode.commands.registerCommand('vertex.nextLockedCaller', nextLockedCaller),
+    vscode.commands.registerCommand('vertex.prevLockedCaller', prevLockedCaller)
   );
 
   // console.log('VERTEX extension fully activated (lock mode ready)');
@@ -180,13 +190,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   // console.log('VERTEX extension deactivating');
-  
+
   // Stop backend server
   if (backendManager) {
     backendManager.dispose();
     backendManager = null;
   }
-  
+
   disposeDeadCodeProvider();
   disposeDecorations();
 }

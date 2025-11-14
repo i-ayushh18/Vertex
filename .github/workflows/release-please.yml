@@ -1,0 +1,51 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+          package-name: vertex-extension
+          
+      # Build and upload VSIX when release is created
+      - name: Checkout code
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        if: ${{ steps.release.outputs.release_created }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          cd vscode-extension
+          npm install
+          
+      - name: Build extension
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          cd vscode-extension
+          npm run compile
+          npx vsce package
+          
+      - name: Upload VSIX to Release
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} vscode-extension/*.vsix

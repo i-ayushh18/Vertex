@@ -2,6 +2,14 @@
 
 All notable changes to VERTEX will be documented in this file.
 
+## [0.1.1-beta](https://github.com/i-ayushh18/Vertex/compare/v0.1.0-beta...v0.1.1-beta) (2025-11-14)
+
+
+### Bug Fixes
+
+* update release-please config for simple release type ([f60c14a](https://github.com/i-ayushh18/Vertex/commit/f60c14a5254da6908c4743b89c8a1491eecf1f10))
+* update to googleapis/release-please-action and remove deprecated params ([1721897](https://github.com/i-ayushh18/Vertex/commit/1721897e9ccf03bc6bf25ab67901511631cd22b5))
+
 ## [0.1.1] - 2024-11-14
 
 ### ✨ Features

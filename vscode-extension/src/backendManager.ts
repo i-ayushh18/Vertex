@@ -9,50 +9,69 @@ export class BackendManager {
     private readonly outputChannel: vscode.OutputChannel;
 
     constructor(extensionPath: string) {
-        // Path to bundled backend executable
-        const platform = process.platform;
-        const execName = platform === 'win32' ? 'vertex-server.exe' : 'vertex-server';
-        this.backendPath = path.join(extensionPath, 'backend', execName);
-
+        // Create output channel first so we can log everything
         this.outputChannel = vscode.window.createOutputChannel('VERTEX Backend');
+        
+        try {
+            // Path to bundled backend executable
+            const platform = process.platform;
+            const execName = platform === 'win32' ? 'vertex-server.exe' : 'vertex-server';
+            this.backendPath = path.join(extensionPath, 'backend', execName);
+            
+            this.outputChannel.appendLine(`[INIT] Extension path: ${extensionPath}`);
+            this.outputChannel.appendLine(`[INIT] Platform: ${platform}`);
+            this.outputChannel.appendLine(`[INIT] Backend path: ${this.backendPath}`);
+        } catch (error) {
+            this.outputChannel.appendLine(`[ERROR] Constructor failed: ${error}`);
+            throw error;
+        }
     }
 
     async startBackend(): Promise<boolean> {
-        // console.log('[VERTEX] startBackend() called');
-        // console.log('[VERTEX] Extension path:', this.backendPath);
-        // console.log('[VERTEX] Backend exists:', fs.existsSync(this.backendPath));
+        this.outputChannel.appendLine('[VERTEX] startBackend() called');
+        this.outputChannel.appendLine(`[VERTEX] Backend path: ${this.backendPath}`);
+        this.outputChannel.appendLine(`[VERTEX] Backend exists: ${fs.existsSync(this.backendPath)}`);
+        
         if (this.backendProcess) {
-            // console.log('[VERTEX] Backend already running');
+            this.outputChannel.appendLine('[VERTEX] Backend already running');
             return true;
         }
 
         if (!fs.existsSync(this.backendPath)) {
-            vscode.window.showErrorMessage(
-                'VERTEX: Backend executable not found. Please reinstall the extension.'
-            );
+            const msg = 'VERTEX: Backend executable not found. Please reinstall the extension.';
+            this.outputChannel.appendLine(`[ERROR] ${msg}`);
+            vscode.window.showErrorMessage(msg);
             return false;
         }
 
         try {
-            // console.log(`[VERTEX] Starting backend: ${this.backendPath}`);
+            this.outputChannel.appendLine(`[VERTEX] Spawning backend: ${this.backendPath}`);
 
             this.backendProcess = spawn(this.backendPath, [], {
                 stdio: ['ignore', 'pipe', 'pipe'],
-                detached: false
+                detached: false,
+                windowsHide: true
             });
+
+            this.outputChannel.appendLine(`[VERTEX] Backend process spawned with PID: ${this.backendProcess.pid}`);
 
             // Handle backend output
             this.backendProcess.stdout?.on('data', (data) => {
-                this.outputChannel.appendLine(`[STDOUT] ${data.toString()}`);
+                this.outputChannel.appendLine(`[STDOUT] ${data.toString().trim()}`);
             });
 
             this.backendProcess.stderr?.on('data', (data) => {
-                this.outputChannel.appendLine(`[STDERR] ${data.toString()}`);
+                this.outputChannel.appendLine(`[STDERR] ${data.toString().trim()}`);
+            });
+
+            // Handle backend errors
+            this.backendProcess.on('error', (error) => {
+                this.outputChannel.appendLine(`[ERROR] Backend process error: ${error.message}`);
             });
 
             // Handle backend exit
-            this.backendProcess.on('exit', (code) => {
-                // console.log(`[VERTEX] Backend exited with code: ${code}`);
+            this.backendProcess.on('exit', (code, signal) => {
+                this.outputChannel.appendLine(`[VERTEX] Backend exited with code: ${code}, signal: ${signal}`);
                 this.backendProcess = null;
 
                 if (code !== 0 && code !== null) {
@@ -67,24 +86,33 @@ export class BackendManager {
                 }
             });
 
-            // Wait a moment for startup
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Test if backend is responding
-            const isRunning = await this.testBackendConnection();
-            if (isRunning) {
-                // console.log('[VERTEX] Backend started successfully');
-                vscode.window.showInformationMessage('VERTEX: Backend started successfully');
-                return true;
-            } else {
-                // console.log('[VERTEX] Backend failed to start properly');
-                this.stopBackend();
-                return false;
+            // Wait and retry connection test
+            this.outputChannel.appendLine('[VERTEX] Waiting for backend to start...');
+            const maxRetries = 10;
+            const retryDelay = 1000;
+            
+            for (let i = 0; i < maxRetries; i++) {
+                await new Promise(resolve => setTimeout(resolve, retryDelay));
+                this.outputChannel.appendLine(`[VERTEX] Connection attempt ${i + 1}/${maxRetries}...`);
+                
+                const isRunning = await this.testBackendConnection();
+                if (isRunning) {
+                    this.outputChannel.appendLine('[VERTEX] ✅ Backend started successfully!');
+                    vscode.window.showInformationMessage('VERTEX: Backend started successfully');
+                    return true;
+                }
             }
 
+            this.outputChannel.appendLine('[VERTEX] ❌ Backend failed to respond after all retries');
+            this.outputChannel.show();
+            this.stopBackend();
+            return false;
+
         } catch (error) {
-            console.error('[VERTEX] Failed to start backend:', error);
-            vscode.window.showErrorMessage(`VERTEX: Failed to start backend: ${error}`);
+            const errorMsg = `Failed to start backend: ${error}`;
+            this.outputChannel.appendLine(`[ERROR] ${errorMsg}`);
+            this.outputChannel.show();
+            vscode.window.showErrorMessage(`VERTEX: ${errorMsg}`);
             return false;
         }
     }

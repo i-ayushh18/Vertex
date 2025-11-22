@@ -2,6 +2,13 @@
 
 All notable changes to VERTEX will be documented in this file.
 
+## [0.1.2-beta](https://github.com/i-ayushh18/Vertex/compare/v0.1.1-beta...v0.1.2-beta) (2025-11-22)
+
+
+### Bug Fixes
+
+* improve backend startup logging and error handling ([b4d7050](https://github.com/i-ayushh18/Vertex/commit/b4d70506544060d0a1412829a926f91089892636))
+
 ## [0.1.1-beta](https://github.com/i-ayushh18/Vertex/compare/v0.1.0-beta...v0.1.1-beta) (2025-11-14)
 
 
